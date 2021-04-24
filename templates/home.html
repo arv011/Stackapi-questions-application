@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teamwave task</title>
+    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
+    
+</head>
+<body class="content-center">
+    <div class="container mx-auto flex px-5 py-5 items-center justify-center flex-col">
+    <div class="w-full m-4" style="border-bottom: 2px solid #eaeaea">
+        <h1 class="lg:text-5xl sm:text-2xl font-medium font-serif text-gray-900 title-font mb-2 mt-10 pl-20">STACKOVERFLOW QUESTIONS</h1>
+    </div>
+    <div class= "w-full">
+        <div class="p-8">
+            <form method = 'post'>
+            {% csrf_token %}
+            <div class="bg-white flex items-center rounded-full shadow-xl">
+            <input class="rounded-l-full w-full py-4 px-6 text-gray-700 leading-tight focus:outline-none" id="search" type="text" placeholder="Search" name = 'searchbar' required>
+            <div class="p-4">
+            <button class="bg-blue-500 text-white rounded-full p-2 hover:bg-blue-400 focus:outline-none w-12 h-12 flex items-center justify-center">
+            click
+            </button>
+            </div>
+            </div>
+            </form>
+        </div>
+        <div>
+        {% if x %}
+        {% if data|length > 0 %}
+        <div class="py-8 flex flex-wrap md:flex-nowrap">
+            <div class="md:w-64 md:mb-0 flex-shrink-0 flex flex-col">
+                <p class="text-2xl font-medium text-gray-900 title-font mb-2">Search Results</p>
+                <p class="text-gray-500 text-sm">Result for {{searchresult}}</p>
+                {% if sort %}
+                    <p class="text-gray-500 text-sm">sort by: {{sort}}</p>
+                {% endif %}
+            </div>
+            <div class="md:flex-grow">     
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class= "w-10/12 m-2">
+                    <div style='border-bottom: 2px solid #eaeaea'>
+                    <ul class='flex cursor-pointer'>
+                        <li class='bg-white rounded-t-lg text-gray-700 bg-gray-200 hover:bg-gray-300'><button value="{{searchresult}}" id="{{searchresult}}" name="votes" class="py-2 px-6 rounded-t-lg">By votes</button></li>
+                        <li class='bg-white rounded-t-lg text-gray-700 bg-gray-200 hover:bg-gray-300'><button value="{{searchresult}}" id="{{searchresult}}" name="relevance" class="py-2 px-6 rounded-t-lg">By Relevance</button></li>
+                        <li class='bg-white rounded-t-lg text-gray-700 bg-gray-200 hover:bg-gray-300'><button value="{{searchresult}}" id="{{searchresult}}" name="creation" class="py-2 px-6 rounded-t-lg">By Creation</button></li>
+                    </ul>
+                    </div>
+                </div>
+            </form>
+            </div>  
+        </div>
+        {% else %}
+        <p class="font-mono text-2xl text-gray-600 font-light tracking-widest p-20">no results for "{{searchresult}}" Question please search valid questions</p>
+        {% endif %}
+
+    {% else %}
+        <div class="w-10/12 m-2 mt-10">
+            
+            <p class="font-mono text-gray-600 sm:text-sm lg:text-2xl font-light tracking-widest p-20">"Stack Overflow is a question and answer site for professional and enthusiast programmers. It is a privately held website, the flagship site of the Stack Exchange Network, created in 2008 by Jeff Atwood and Joel Spolsky. It features questions and answers on a wide range of topics in computer programming."</p>
+        </div>
+        <div class="w-full m-4"style='border-bottom: 2px solid #eaeaea'></div>
+    {% endif %}
+        </div>
+    </div>
+    
+    <div class = 'q'>
+        
+    <section class="text-gray-600 body-font overflow-hidden">    
+        <div class="container px-5 py-5 mx-auto">
+            <div class="-my-8 divide-y-2 divide-gray-100">
+            {% for questions in data %}
+                <div class="py-8 flex flex-wrap md:flex-nowrap">
+                    <div class="md:w-64 md:mb-0 mb-6 flex-shrink-0 flex flex-col">
+                    <span class="font-semibold title-font text-gray-700">Asked by: {{questions.ByName}}</span>
+                    <span class="mt-1 text-gray-500 text-sm">{{questions.creation_date}}</span>
+                    <span class="mt-1 text-gray-500 text-sm">Answered by: {{questions.answer_count}} people</span>
+                    <span class="mt-1 text-gray-500 text-sm">Votes : {{questions.score}}</span>
+                    </div>
+                    <div class="md:flex-grow">
+                    <h2 class="text-2xl font-medium text-gray-900 title-font mb-2">{{questions.title}}</h2>
+                    <p class="leading-relaxed">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {% for tag in questions.Tags %}
+                            <button value="{{tag}}" id="{{tag}}" name='tag' class="px-2 py-2 mx-2 rounded-r-md border border-gray-100 bg-gray-100 text-gray-500 hover:bg-gray-200">{{tag}}</button>
+                            
+                            {% endfor %}
+                        </form>
+                    </p>
+                    <a class="text-indigo-500 inline-flex items-center mt-4 hover:text-indigo-800" href="{{questions.link}}">View answers
+                        <svg class="w-4 h-4 ml-2" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14"></path>
+                        <path d="M12 5l7 7-7 7"></path>
+                        </svg>
+                    </a>
+                    </div>
+                </div>  
+                
+            {% endfor %}
+            </div>
+        </div>
+    </section>
+    </div>
+{% if data.has_other_pages %}
+    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mb-20">
+    <div class="flex-1 flex justify-between sm:hidden">
+        <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
+        Previous
+        </a>
+        <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:text-gray-500">
+        Next
+        </a>
+    </div>
+    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+        <div>
+        <p class="text-sm text-gray-700">
+            Showing
+            <span class="font-medium">1</span>
+            to
+            <span class="font-medium">5</span>
+            of
+            <span class="font-medium">{{dt_count}}</span>
+            results
+        </p>
+        </div>
+        <div>
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            {% if data.has_previous %}
+            <a href="?page={{ data.previous_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-100">
+            <span class="sr-only">Previous</span>
+            <!-- Heroicon name: solid/chevron-left -->
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+            </svg>
+            </a>
+            {% endif %}
+            {% for i in data.paginator.page_range %}
+                {% if data.number == i %}
+                    <a href="?page={{ i }}" class="relative inline-flex bg-blue-500 items-center px-4 py-2 border border-gray-300 text-sm font-medium text-white hover:bg-blue-600">
+                    {{ i }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+            
+            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+            ...
+            </span>
+            {% if data.has_next %}
+            <a href="?page={{ data.next_page_number }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-100">
+            <span class="sr-only">Next</span>
+            <!-- Heroicon name: solid/chevron-right -->
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+            </svg>
+            </a>
+            {% endif %}
+        </nav>
+        </div>
+    </div>
+    </div>
+    {% endif %}
+    </div>
+</body>
+</html>
